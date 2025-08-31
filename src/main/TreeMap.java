@@ -21,6 +21,7 @@ public class TreeMap {
     }
 
     
+    
     /**
      * Metodo responsável por adicionar elementos no TreeMap a partir de uma chave e um valor 
      * 
@@ -28,60 +29,73 @@ public class TreeMap {
      * @param value é o valor inteiro ligado a determinada chave
      */
     public void put(String key, int value) {
-    	this.size++;
 		
-		if (isEmpty()) {
-			Node newNode = new Node(key, value);
-			this.root = newNode;
-			
-			balance(root);
-		}
-		
-		put(this.root, key, value);
-	}
-	
-	private void put(Node current, String key, int value) {
-		
-		if (current.getKey().compareTo(key) > 0) {
-			if (current.left == null) {
-				Node newNode = new Node(key, value);
-				
-				current.left = newNode;
-				newNode.parent = current;
-				
-				balance(newNode);
-				
-				return;
-			}
-			
-			put(current.left, key, value);
-		} else {
-			if (current.right == null) {
-				Node newNode = new Node(key, value);
-				
-				current.right = newNode;
-				newNode.parent = current;
-				
-				balance(newNode);
-				
-				return;
-			}
-			
-			put(current.right, key, value);
-		}
-	}
-	
-	/**
-	 * Método que altera o valor atrelado a certa chave
-	 * 
-	 * @param key a chave do node que se deseja alterar o valor
-	 * @param newValue o novo valor que sera atribuido ao node
-	 */
-	public void replace(String key, int newValue) {
-		Node node = search(key);
-		
-		node.setValue(newValue);
-	}
+  		if (isEmpty()) {
+  			Node newNode = new Node(key, value);
+  			this.root = newNode;
+  			
+  			this.size++;
+  			balance(root);
+  		} else {
+  			put(this.root, key, value);
+  		}
+  	}
+  	
+  	
+    private void put(Node current, String key, int value) {
+  		
+  		if (current.getKey().compareTo(key) == 0) {
+  			replace(current, value);
+  		
+  		} else if (current.getKey().compareTo(key) > 0) {
+  			if (current.left == null) {
+  				Node newNode = new Node(key, value);
+  				
+  				current.left = newNode;
+  				newNode.parent = current;
+  				
+  				this.size++;
+  				
+  				balance(newNode);
+  				
+  				return;
+  			}
+  			
+  			put(current.left, key, value);
+  		
+  		} else {
+  			if (current.right == null) {
+  				Node newNode = new Node(key, value);
+  				
+  				current.right = newNode;
+  				newNode.parent = current;
+  				
+  				this.size++;
+  				
+  				balance(newNode);
+  				
+  				return;
+  			}
+  			
+  			put(current.right, key, value);
+  		}
+  	}
+  	
+  	/**
+  	 * Método que altera o valor atrelado a certa chave
+  	 * 
+  	 * @param key a chave do node que se deseja alterar o valor
+  	 * @param newValue o novo valor que sera atribuido ao node
+  	 */
+  	public void replace(String key, int newValue) {
+  		Node node = search(key);
+  		
+  		replace(node, newValue);
+  	}
+  	
+  	private void replace(Node node, int newValue) {
+  		node.setValue(newValue);
+  	}
 	
 	/**
 	 * Método responsável por checar o balanceamento do TreeMap seguindo os 5 casos de uma BST rubro-negra
@@ -182,39 +196,56 @@ public class TreeMap {
 	 * 
 	 * @param node o node que sera rotacionado
 	 */
-	private void leftRotation(Node node) {
-		node.parent.left = node.right;
+		private void leftRotation(Node node) {
+			if (node.equals(root))
+				this.root = node.right;
+			
+			node.right.parent = node.parent;
+			
+			if (node.parent != null) {
+				if (node.isRightChild())
+					node.parent.right = node.right;
+				else
+					node.parent.left = node.right;
+			}
+
+			node.parent = node.right;
+			
+			node.right = node.parent.left;
+			
+			if (node.parent.left != null)
+				node.parent.left.parent = node;
+			
+			node.parent.left = node;
+		}
 		
-		node.right.left.parent = node;
-		
-		node.right.parent = node.parent;
-		
-		node.parent = node.right;
-		
-		node.right = node.right.left;
-		
-		node.parent.left = node;
-		
-	}
-	
-	/**
-	 * Método que rotaciona determinado node para a direita
-	 * 
-	 * @param node o node que sera rotacionado
-	 */
-	private void rightRotation(Node node) {
-		node.parent.right = node.left;
-		
-		node.left.right.parent = node;
-		
-		node.left.parent = node.parent;
-		
-		node.parent = node.left;
-		
-		node.left = node.left.right;
-		
-		node.parent.right = node;
-	}
+		/**
+		 * Método que rotaciona determinado node para a direita
+		 * 
+		 * @param node o node que sera rotacionado
+		 */
+		private void rightRotation(Node node) {
+			if (node.equals(root))
+				this.root = node.left;
+			
+			node.left.parent = node.parent;
+			
+			if (node.parent != null) {
+				if (node.isRightChild())
+					node.parent.right = node.left;
+				else
+					node.parent.left = node.left;
+			}
+			
+			node.parent = node.left;
+			
+			node.left = node.parent.right;
+			
+			if (node.parent.left != null)
+				node.parent.right.parent = node;
+			
+			node.parent.right = node;
+		}
 
 	/**
 	 * Metodo que remove certa chave do TreeMap
