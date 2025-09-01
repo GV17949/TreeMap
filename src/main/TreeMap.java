@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.Objects;
+
 public class TreeMap {
     private Node root;
     private int size;
@@ -21,7 +24,6 @@ public class TreeMap {
     }
 
     
-    
     /**
      * Metodo responsável por adicionar elementos no TreeMap a partir de uma chave e um valor 
      * 
@@ -30,72 +32,71 @@ public class TreeMap {
      */
     public void put(String key, int value) {
 		
-  		if (isEmpty()) {
-  			Node newNode = new Node(key, value);
-  			this.root = newNode;
-  			
-  			this.size++;
-  			balance(root);
-  		} else {
-  			put(this.root, key, value);
-  		}
-  	}
-  	
-  	
-    private void put(Node current, String key, int value) {
-  		
-  		if (current.getKey().compareTo(key) == 0) {
-  			replace(current, value);
-  		
-  		} else if (current.getKey().compareTo(key) > 0) {
-  			if (current.left == null) {
-  				Node newNode = new Node(key, value);
-  				
-  				current.left = newNode;
-  				newNode.parent = current;
-  				
-  				this.size++;
-  				
-  				balance(newNode);
-  				
-  				return;
-  			}
-  			
-  			put(current.left, key, value);
-  		
-  		} else {
-  			if (current.right == null) {
-  				Node newNode = new Node(key, value);
-  				
-  				current.right = newNode;
-  				newNode.parent = current;
-  				
-  				this.size++;
-  				
-  				balance(newNode);
-  				
-  				return;
-  			}
-  			
-  			put(current.right, key, value);
-  		}
-  	}
-  	
-  	/**
-  	 * Método que altera o valor atrelado a certa chave
-  	 * 
-  	 * @param key a chave do node que se deseja alterar o valor
-  	 * @param newValue o novo valor que sera atribuido ao node
-  	 */
-  	public void replace(String key, int newValue) {
-  		Node node = search(key);
-  		
-  		replace(node, newValue);
-  	}
-  	
-  	private void replace(Node node, int newValue) {
-  		node.setValue(newValue);
-  	}
+		if (isEmpty()) {
+			Node newNode = new Node(key, value);
+			this.root = newNode;
+			
+			this.size++;
+			balance(root);
+		} else {
+			put(this.root, key, value);
+		}
+	}
+	
+	private void put(Node current, String key, int value) {
+		
+		if (current.getKey().compareTo(key) == 0) {
+			replace(current, value);
+		
+		} else if (current.getKey().compareTo(key) > 0) {
+			if (current.left == null) {
+				Node newNode = new Node(key, value);
+				
+				current.left = newNode;
+				newNode.parent = current;
+				
+				this.size++;
+				
+				balance(newNode);
+				
+				return;
+			}
+			
+			put(current.left, key, value);
+		
+		} else {
+			if (current.right == null) {
+				Node newNode = new Node(key, value);
+				
+				current.right = newNode;
+				newNode.parent = current;
+				
+				this.size++;
+				
+				balance(newNode);
+				
+				return;
+			}
+			
+			put(current.right, key, value);
+		}
+	}
+	
+	/**
+	 * Método que altera o valor atrelado a certa chave
+	 * 
+	 * @param key a chave do node que se deseja alterar o valor
+	 * @param newValue o novo valor que sera atribuido ao node
+	 */
+	public void replace(String key, int newValue) {
+		Node node = search(key);
+		
+		replace(node, newValue);
+	}
+	
+	private void replace(Node node, int newValue) {
+		node.setValue(newValue);
+	}
 	
 	/**
 	 * Método responsável por checar o balanceamento do TreeMap seguindo os 5 casos de uma BST rubro-negra
@@ -115,8 +116,9 @@ public class TreeMap {
 			if (node.equals(root)) {
 				root.turnBlack();
 				return;
-			} else
+			} else {
 				fixupCase2(node);
+			}
 			
 		}
 		
@@ -129,8 +131,9 @@ public class TreeMap {
 		private void fixupCase2(Node node) {
 			if (node.parent.isBlack()) {
 				return;
-			} else
+			} else {
 				fixupCase3(node);
+			}
 		}
 
 		/**
@@ -141,14 +144,15 @@ public class TreeMap {
 		 * @param node o node em que o balanceamento esta sendo checado
 		 */
 		private void fixupCase3(Node node) {
-			if (node.getUncle().isRed()) {
+			if (node.getUncle() != null && node.getUncle().isRed()) {
 				node.parent.turnBlack();
 				node.getUncle().turnBlack();
 				node.getGrandParent().turnRed();
 				fixupCase1(node.getGrandParent());
 				return;
-			} else
+			} else {
 				fixupCase4(node);
+			}
 		}
 
 		/**
@@ -196,56 +200,56 @@ public class TreeMap {
 	 * 
 	 * @param node o node que sera rotacionado
 	 */
-		private void leftRotation(Node node) {
-			if (node.equals(root))
-				this.root = node.right;
-			
-			node.right.parent = node.parent;
-			
-			if (node.parent != null) {
-				if (node.isRightChild())
-					node.parent.right = node.right;
-				else
-					node.parent.left = node.right;
-			}
+	private void leftRotation(Node node) {
+		if (node.equals(root))
+			this.root = node.right;
+		
+		node.right.parent = node.parent;
+		
+		if (node.parent != null) {
+			if (node.isRightChild())
+				node.parent.right = node.right;
+			else
+				node.parent.left = node.right;
+		}
 
-			node.parent = node.right;
-			
-			node.right = node.parent.left;
-			
-			if (node.parent.left != null)
-				node.parent.left.parent = node;
-			
-			node.parent.left = node;
+		node.parent = node.right;
+		
+		node.right = node.parent.left;
+		
+		if (node.parent.left != null)
+			node.parent.left.parent = node;
+		
+		node.parent.left = node;
+	}
+	
+	/**
+	 * Método que rotaciona determinado node para a direita
+	 * 
+	 * @param node o node que sera rotacionado
+	 */
+	private void rightRotation(Node node) {
+		if (node.equals(root))
+			this.root = node.left;
+		
+		node.left.parent = node.parent;
+		
+		if (node.parent != null) {
+			if (node.isRightChild())
+				node.parent.right = node.left;
+			else
+				node.parent.left = node.left;
 		}
 		
-		/**
-		 * Método que rotaciona determinado node para a direita
-		 * 
-		 * @param node o node que sera rotacionado
-		 */
-		private void rightRotation(Node node) {
-			if (node.equals(root))
-				this.root = node.left;
-			
-			node.left.parent = node.parent;
-			
-			if (node.parent != null) {
-				if (node.isRightChild())
-					node.parent.right = node.left;
-				else
-					node.parent.left = node.left;
-			}
-			
-			node.parent = node.left;
-			
-			node.left = node.parent.right;
-			
-			if (node.parent.left != null)
-				node.parent.right.parent = node;
-			
-			node.parent.right = node;
-		}
+		node.parent = node.left;
+		
+		node.left = node.parent.right;
+		
+		if (node.parent.left != null)
+			node.parent.right.parent = node;
+		
+		node.parent.right = node;
+	}
 
 	/**
 	 * Metodo que remove certa chave do TreeMap
@@ -262,10 +266,10 @@ public class TreeMap {
     }
 	
 	private void remove(Node toRemove) {
-		this.size--;
 		
 		if (toRemove.isLeaf()) {
-			if (toRemove.equals(root))
+			
+			if (toRemove.equals(root) && root.isLeaf())
 				this.root = null;
 			
 			else {
@@ -274,35 +278,47 @@ public class TreeMap {
 				else
 					toRemove.parent.right = null;
 			}
+			
+			this.size--;
 		
 		} else if (toRemove.hasOnlyLeftChild()) {
-			if (toRemove.equals(root)) {
+			
+			if (toRemove.equals(root) && root.hasOnlyLeftChild()) {
 				this.root = toRemove.left;
 				this.root.parent = null;
 			} else {
 				toRemove.left.parent = toRemove.parent;
+				
 				if (toRemove.isLeftChild())
 					toRemove.parent.left = toRemove.left;
 				else
 					toRemove.parent.right = toRemove.left;
 			}
+			
+			this.size--;
 		
 		} else if (toRemove.hasOnlyRigthChild()) {
-			if (toRemove.equals(root)) {
+			if (toRemove.equals(root) && root.hasOnlyRigthChild()) {
 				this.root = toRemove.right;
 				this.root.parent = null;		
 			} else {
 				toRemove.right.parent = toRemove.parent;
+				
 				if (toRemove.isLeftChild())
 					toRemove.parent.left = toRemove.right;
 				else
 					toRemove.parent.right = toRemove.right;
 			}
+			
+			this.size--;
 		
 		} else {
-			Node sucessor = sucessor(toRemove);
-			sucessor.getPair() = toRemove.getPair();
-			remove(sucessor.getKey());
+			Node antecessor = predecessor(toRemove);
+			
+			toRemove.setKey(antecessor.getKey());
+			toRemove.setValue(antecessor.getValue());
+			
+			remove(antecessor);
 		}
 	}
     /**
@@ -337,10 +353,10 @@ public class TreeMap {
 		Node aux = this.root;
 		
 		while (aux != null) {
-			if (aux.pair.getKey() == key)
+			if (aux.getKey() == key)
 				return aux;
 			
-			else if (aux.pair.getKey().compareTo(key) < 0)
+			else if (aux.getKey().compareTo(key) < 0)
 				aux = aux.right;
 			
 			else
@@ -357,24 +373,22 @@ public class TreeMap {
      * @param value valor que se deseja checar a presença na estrutura
      * @return retorna true caso o valor esteja presente em pelo menos um node e falso em caso contrário
      */
-	public boolean contains(int value) {
-    	return contains(this.root, value);
+	public boolean containsValue(int value) {
+    	return containsValue(this.root, value);
     }
     
-	private boolean contains(Node node, int value) {
+	private boolean containsValue(Node node, int value) {
     	if (node != null) {
-    		
-    		contains(node.left, value);
     		
     		if (node.getValue() == value)
     			return true;
     		
-    		contains(node.right, value);
+    		return containsValue(node.left, value) || containsValue(node.right, value);
+    		
     	}
     	
     	return false;
-    }
-    
+	}
     /**
      * Metodo que retorna a altura da árvore
      * 
@@ -392,41 +406,62 @@ public class TreeMap {
     }
     
     /**
-     * Método que retorna o minimo de determida arvore, considerando o node passado como a raiz da subarvore 
+     * Método que retorna o maximo de determida arvore, considerando o node passado como a raiz da subarvore 
      * 
-     * @param node raiz da subarvore que se deseja encontrar o minimo
-     * @return retorna o node referente ao minimo da subarvore
+     * @param node raiz da subarvore que se deseja encontrar o maximo
+     * @return retorna o node referente ao maximo da subarvore
      */
-    private Node min(Node node) {
-		if (node.left == null)
+    private Node max(Node node) {
+		if (node.right == null)
 			return node;
 		
-		return min(node.left);
+		return max(node.right);
 	}
     
     /**
-     * Método que retorna o sucessor de determinado node
+     * Método que retorna o antecessor de determinado node
      * 
-     * @param node node o qual se deseja encontrar o sucessor
-     * @return retorna o sucessor do node em questão
+     * @param node node o qual se deseja encontrar o predecessor
+     * @return retorna o antecessor do node em questão
      */
-    private Node sucessor(Node node) {
+    public Node predecessor(Node node) {
 		if (node == null)
 			return null;
 		
-		if (node.right != null)
-			return min(node.right);
+		if (node.left!= null)
+			return max(node.left);
 		
 		else {
 			Node aux = node.parent;
 			
-			while (aux != null && aux.getKey().compareTo(node.getKey()) < 0)
+			while (aux != null && aux.getKey().compareTo(node.getKey()) > 0)
 				aux = aux.parent;
-			
 			
 			return aux;
 		}
 	}
+    
+    
+    private ArrayList<String> preOrdem() {
+    	ArrayList<String> toString = new ArrayList<String>();
+    	preOrdem(this.root, toString);
+    	return toString;
+    }
+    
+    private void preOrdem(Node node, ArrayList<String> toString) {
+    	if (node != null) {
+    		toString.add(node.toString());
+    		preOrdem(node.left, toString);
+    		preOrdem(node.right, toString);
+    	}
+    }
+    
+    @Override
+    public String toString() {
+    	ArrayList<String> toString = preOrdem();
+    	
+    	return toString.toString();
+    }
 }
 
 
@@ -476,14 +511,14 @@ class Node {
 	}
 
 	boolean isLeftChild() {
-    	return this.getKey().compareTo(this.parent.getKey()) < 0;
+    	return this.equals(this.parent.left);
     }
     
    boolean isRightChild() {
     	return !isLeftChild();
     }
     
-    Node getUncle() {
+   	Node getUncle() {
     	if (this.parent.isRightChild())
     		return this.getGrandParent().left;
     	else
@@ -500,6 +535,10 @@ class Node {
     
     void setValue(int newValue) {
     	this.pair = new Pair(this.pair.getKey(), newValue);
+    }
+    
+    void setKey(String newKey) {
+    	this.pair = new Pair(newKey, this.pair.getValue());
     }
     
     String getKey() {
@@ -520,6 +559,20 @@ class Node {
     
     void turnRed() {
     	this.color = Color.RED;
+    }
+    
+    String getColor() {
+    	if (this.color == Color.BLACK) {
+    		return "BLACK";
+    	} else {
+    		return "RED";
+    	}
+    }
+    
+    @Override
+	
+    public String toString() {
+    	return "(" + pair.toString() + ")" + "," + this.getColor();
     }
     
 }
@@ -556,5 +609,10 @@ class Pair {
     
     public int getValue() {
     	return this.value;
+    }
+    
+    @Override
+    public String toString() {
+    	return key + "," + value;
     }
 }
