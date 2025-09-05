@@ -99,103 +99,102 @@ public class TreeMap {
 	}
 	
 	/**
-	 * Método responsável por checar o balanceamento do TreeMap seguindo os 5 casos de uma BST rubro-negra
+	 * Método responsável por checar o balanceamento durante a inserção do TreeMap seguindo os 5 casos de uma BST rubro-negra
 	 * 
 	 * @param node o node em que o balanceamento será checado
 	 */
 	private void balance(Node node) {
 		fixupCase1(node);
 	}
+		/**
+		 * Primeiro caso do balanceamento, ele checa se o node em questão é a raiz, em caso positivo ele a torna preta
+		 * e em caso negativo segue para o segundp caso
+		 * 
+		 * @param node o node em que o balanceamento esta sendo checado
+		 */
+		private void fixupCase1(Node node) {
+			if (node.equals(root)) {
+				root.turnBlack();
+				return;
+			} else {
+				fixupCase2(node);
+			}
+			
+		}
+		
+		/**
+		 * Segundo caso do balanceamento, ele checa se o pai do node em questão é preto em caso negativo ele segue para o terceiro caso 
+		 * e em caso positivo ele encerra a checagem do balanceamento
+		 * 
+		 * @param node o node em que o balanceamento esta sendo checado
+		 */
+		private void fixupCase2(Node node) {
+			if (node.parent.isBlack()) {
+				return;
+			} else {
+				fixupCase3(node);
+			}
+		}
 
-    /**
-     * Primeiro caso do balanceamento, ele checa se o node em questão é a raiz, em caso positivo ele a torna preta
-     * e em caso negativo segue para o segundp caso
-     * 
-     * @param node o node em que o balanceamento esta sendo checado
-     */
-    private void fixupCase1(Node node) {
-        if (node.equals(root)) {
-            root.turnBlack();
-            return;
-        } else {
-            fixupCase2(node);
-        }
-        
-    }
-    
-    /**
-     * Segundo caso do balanceamento, ele checa se o pai do node em questão é preto em caso negativo ele segue para o terceiro caso 
-     * e em caso positivo ele encerra a checagem do balanceamento
-     * 
-     * @param node o node em que o balanceamento esta sendo checado
-     */
-    private void fixupCase2(Node node) {
-        if (node.parent.isBlack()) {
-            return;
-        } else {
-            fixupCase3(node);
-        }
-    }
+		/**
+		 * Terceiro caso do balanceamento, ele checa se o tio do node em questão é vermelho,
+		 * em caso positivo ambos o pai e o tio do node se tornam pretos e o seu avô se torna vermelho
+		 * em seguida o primeiro caso é invocado para o avô do node, caso o contrário convocamos o quarto caso 
+		 * 
+		 * @param node o node em que o balanceamento esta sendo checado
+		 */
+		private void fixupCase3(Node node) {
+			if (node.getUncle() != null && node.getUncle().isRed()) {
+				node.parent.turnBlack();
+				node.getUncle().turnBlack();
+				node.getGrandParent().turnRed();
+				fixupCase1(node.getGrandParent());
+				return;
+			} else {
+				fixupCase4(node);
+			}
+		}
 
-    /**
-     * Terceiro caso do balanceamento, ele checa se o tio do node em questão é vermelho,
-     * em caso positivo ambos o pai e o tio do node se tornam pretos e o seu avô se torna vermelho
-     * em seguida o primeiro caso é invocado para o avô do node, caso o contrário convocamos o quarto caso 
-     * 
-     * @param node o node em que o balanceamento esta sendo checado
-     */
-    private void fixupCase3(Node node) {
-        if (node.getUncle() != null && node.getUncle().isRed()) {
-            node.parent.turnBlack();
-            node.getUncle().turnBlack();
-            node.getGrandParent().turnRed();
-            fixupCase1(node.getGrandParent());
-            return;
-        } else {
-            fixupCase4(node);
-        }
-    }
+		/**
+		 * Quarto caso do balanceamento, ele checa se o node é um filho a direita e seu pai é um filho a esquerda
+		 * em caso positivo ele rotaciona o pai para a esquerda e invoca o quinto caso com a esquerda do node,
+		 * se o node for um filho a esquerda e o seu pai for um filho a direita o pai é rotacionado para a direira e 
+		 * o quinto caso é invocado com a direita do node, caso o node não se enquadre em nenhum desses casos o quinto passo
+		 * é invocado passando o mesmo como parametro 
+		 * 
+		 * @param node o node em que o balanceamento esta sendo checado
+		 */
+		private void fixupCase4(Node node) {
+			Node next = node;
+		
+			if (node.isRightChild() && node.parent.isLeftChild()) {
+				leftRotation(node.parent);
+				next = node.left;
+			} else if (node.isLeftChild() && node.parent.isRightChild()) {
+				rightRotation(node.parent);
+				next = node.right;
+			}
+		
+			fixupCase5(next);
+		}
 
-    /**
-     * Quarto caso do balanceamento, ele checa se o node é um filho a direita e seu pai é um filho a esquerda
-     * em caso positivo ele rotaciona o pai para a esquerda e invoca o quinto caso com a esquerda do node,
-     * se o node for um filho a esquerda e o seu pai for um filho a direita o pai é rotacionado para a direira e 
-     * o quinto caso é invocado com a direita do node, caso o node não se enquadre em nenhum desses casos o quinto passo
-     * é invocado passando o mesmo como parametro 
-     * 
-     * @param node o node em que o balanceamento esta sendo checado
-     */
-    private void fixupCase4(Node node) {
-        Node next = node;
-    
-        if (node.isRightChild() && node.parent.isLeftChild()) {
-            leftRotation(node.parent);
-            next = node.left;
-        } else if (node.isLeftChild() && node.parent.isRightChild()) {
-            rightRotation(node.parent);
-            next = node.right;
-        }
-    
-        fixupCase5(next);
-    }
-
-    /**
-     * Quinto caso do balanceamento e o caso final, ele torna o pai do node em preto e seu 
-     * avô em vermelho depois ele checa se o node é filho a esquerda se sim ele rotaciona o node 
-     * para a direita e caso negativo ele rotaciona o node para a esquerda 
-     * 
-     * @param node o node em que o balanceamento esta sendo checado
-     */
-    private void fixupCase5(Node node) {
-        node.parent.turnBlack();
-        node.getGrandParent().turnRed();
-    
-        if (node.isLeftChild())
-            rightRotation(node.getGrandParent());
-        else
-            leftRotation(node.getGrandParent());
-    }
-
+		/**
+		 * Quinto caso do balanceamento e o caso final, ele torna o pai do node em preto e seu 
+		 * avô em vermelho depois ele checa se o node é filho a esquerda se sim ele rotaciona o node 
+		 * para a direita e caso negativo ele rotaciona o node para a esquerda 
+		 * 
+		 * @param node o node em que o balanceamento esta sendo checado
+		 */
+		private void fixupCase5(Node node) {
+			node.parent.turnBlack();
+			node.getGrandParent().turnRed();
+		
+			if (node.isLeftChild())
+				rightRotation(node.getGrandParent());
+			else
+				leftRotation(node.getGrandParent());
+		}
+	
 	/**
 	 * Método que rotaciona determinado node para a esquerda
 	 * 
@@ -266,9 +265,15 @@ public class TreeMap {
 		remove(toRemove);
     }
 	
+	/**
+	 * Metodo reponsavel por retornar que node ira substituir determinado node que esta para ser deletado
+	 * 
+	 * @param node node que se deseja encontrar o substituto
+	 * @return retorna o node que ira substituir o node passado como parametro
+	 */
 	private Node BSTreplace(Node node) {
 		if (node.left != null && node.right != null)
-			return sucessor(node.right); 
+			return predecessor(node.left); 
 		
 		if (node.isLeaf())
 			return null;
@@ -279,6 +284,25 @@ public class TreeMap {
 			return node.right;
 	}
 	
+	  /**
+     * Método que retorna o antecessor de determinado node
+     * 
+     * @param node node o qual se deseja encontrar o predecessor
+     * @return retorna o antecessor do node em questão
+     */
+	private Node predecessor(Node node) {
+		Node aux = node;
+		while (aux.right != null)
+			aux = aux.right;
+		return aux;
+	}
+	
+	/**
+	 * Metodo responsável por remover determinado Node da BST rubro-negra
+	 * 
+	 * @param toRemove node que deseja ser removido
+	 */
+
 	private void remove(Node toRemove) {
 		Node replace = BSTreplace(toRemove);
 		
@@ -299,6 +323,7 @@ public class TreeMap {
 				else
 					parent.right = null;
 			}
+			this.size--;
 			return;
 		}
 		
@@ -322,6 +347,7 @@ public class TreeMap {
 				else
 					replace.turnBlack();
 			}
+			this.size--;
 			return;
 		}
 		
@@ -330,6 +356,13 @@ public class TreeMap {
 		
 	}
 	
+	
+	/**
+	 * Metodo responsável por trocar os valores de dois nodes
+	 * 
+	 * @param u primeiro node que os valores desejam ser trocados
+	 * @param v segundo node que os valores desejam ser trocados
+	 */
 	private void swapValues(Node u, Node v) {
 		String aux = u.getKey();
 		int auxValue = u.getValue();
@@ -340,7 +373,13 @@ public class TreeMap {
 		v.setKey(aux);
 		v.setValue(auxValue);
 	}
-
+	
+	/**
+	 * Metodo responsavel por checar o balanceamento em uma arvore rubro-negra durante a deleção de um node e 
+	 * fazer as alterações necessárias para mante-lo
+	 *  
+	 * @param node node a partir do qual o balanceamento sera checado 
+	 */
 	private void fixDoubleBlack(Node node) {
 		if (node.equals(root))
 			return;
@@ -353,6 +392,13 @@ public class TreeMap {
 			removeFixUp(node, sibling);
 	}
 	
+	/**
+	 * Continuação do metodo fixDoubleBlack, se trata da parte propriamente responsavel por realizar as adequações 
+	 * dada a situação da arvore para a manter balanceada
+	 *   
+	 * @param node node em que o balanceamento sera checado
+	 * @param sibling irmão do node em que o balanceamento esta sendo checado
+	 */
 	private void removeFixUp(Node node, Node sibling) {
 		if (sibling.isRed()) {
 			
@@ -368,8 +414,21 @@ public class TreeMap {
 		} else {
 			if (sibling.hasRedChild()) {
 				
-				if (sibling.left != null && sibling.left.isRed()) {
+				if (sibling.right != null && sibling.right.isRed()) {
 					
+					if (sibling.isLeftChild()) {
+						
+						sibling.right.color = node.parent.getColor();
+						
+						leftRotation(sibling);
+						rightRotation(node.parent);
+					} else {
+						sibling.right.color = sibling.getColor();
+						sibling.color = node.parent.getColor();
+						leftRotation(node.parent);
+					}
+				
+				} else {
 					if (sibling.isLeftChild()) {
 						
 						sibling.left.color = sibling.getColor();
@@ -380,18 +439,6 @@ public class TreeMap {
 						sibling.left.color = node.parent.getColor();
 						
 						rightRotation(sibling);
-						leftRotation(node.parent);
-					}
-				} else {
-					if (sibling.isLeftChild()) {
-						
-						sibling.right.color = node.parent.getColor();
-						
-						leftRotation(sibling);
-						rightRotation(node.parent);
-					} else {
-						sibling.right.color = sibling.getColor();
-						sibling.color = node.parent.getColor();
 						leftRotation(node.parent);
 					}
 				}
@@ -492,21 +539,10 @@ public class TreeMap {
 			return 1 + Math.max(height(node.left), height(node.right));
     }
     
-  
     /**
-     * Método que retorna o antecessor de determinado node
-     * 
-     * @param node node o qual se deseja encontrar o predecessor
-     * @return retorna o antecessor do node em questão
+     * Metodo que retorna a visão da arvore em preOrdem 
+     * @return retorna um ArrayList de String composto do toString de todos os nodes em preOrdem
      */
-    private Node sucessor(Node node) {
-		Node aux = node;
-		while (aux.left != null)
-			aux = aux.left;
-		return aux;
-	}
-    
-    
     private ArrayList<String> preOrdem() {
     	ArrayList<String> toString = new ArrayList<String>();
     	preOrdem(this.root, toString);
