@@ -106,95 +106,96 @@ public class TreeMap {
 	private void balance(Node node) {
 		fixupCase1(node);
 	}
-		/**
-		 * Primeiro caso do balanceamento, ele checa se o node em questão é a raiz, em caso positivo ele a torna preta
-		 * e em caso negativo segue para o segundp caso
-		 * 
-		 * @param node o node em que o balanceamento esta sendo checado
-		 */
-		private void fixupCase1(Node node) {
-			if (node.equals(root)) {
-				root.turnBlack();
-				return;
-			} else {
-				fixupCase2(node);
-			}
-			
-		}
-		
-		/**
-		 * Segundo caso do balanceamento, ele checa se o pai do node em questão é preto em caso negativo ele segue para o terceiro caso 
-		 * e em caso positivo ele encerra a checagem do balanceamento
-		 * 
-		 * @param node o node em que o balanceamento esta sendo checado
-		 */
-		private void fixupCase2(Node node) {
-			if (node.parent.isBlack()) {
-				return;
-			} else {
-				fixupCase3(node);
-			}
-		}
 
-		/**
-		 * Terceiro caso do balanceamento, ele checa se o tio do node em questão é vermelho,
-		 * em caso positivo ambos o pai e o tio do node se tornam pretos e o seu avô se torna vermelho
-		 * em seguida o primeiro caso é invocado para o avô do node, caso o contrário convocamos o quarto caso 
-		 * 
-		 * @param node o node em que o balanceamento esta sendo checado
-		 */
-		private void fixupCase3(Node node) {
-			if (node.getUncle() != null && node.getUncle().isRed()) {
-				node.parent.turnBlack();
-				node.getUncle().turnBlack();
-				node.getGrandParent().turnRed();
-				fixupCase1(node.getGrandParent());
-				return;
-			} else {
-				fixupCase4(node);
-			}
-		}
+    /**
+     * Primeiro caso do balanceamento, ele checa se o node em questão é a raiz, em caso positivo ele a torna preta
+     * e em caso negativo segue para o segundp caso
+     * 
+     * @param node o node em que o balanceamento esta sendo checado
+     */
+    private void fixupCase1(Node node) {
+        if (node.equals(root)) {
+            root.turnBlack();
+            return;
+        } else {
+            fixupCase2(node);
+        }
+        
+    }
+    
+    /**
+     * Segundo caso do balanceamento, ele checa se o pai do node em questão é preto em caso negativo ele segue para o terceiro caso 
+     * e em caso positivo ele encerra a checagem do balanceamento
+     * 
+     * @param node o node em que o balanceamento esta sendo checado
+     */
+    private void fixupCase2(Node node) {
+        if (node.parent.isBlack()) {
+            return;
+        } else {
+            fixupCase3(node);
+        }
+    }
 
-		/**
-		 * Quarto caso do balanceamento, ele checa se o node é um filho a direita e seu pai é um filho a esquerda
-		 * em caso positivo ele rotaciona o pai para a esquerda e invoca o quinto caso com a esquerda do node,
-		 * se o node for um filho a esquerda e o seu pai for um filho a direita o pai é rotacionado para a direira e 
-		 * o quinto caso é invocado com a direita do node, caso o node não se enquadre em nenhum desses casos o quinto passo
-		 * é invocado passando o mesmo como parametro 
-		 * 
-		 * @param node o node em que o balanceamento esta sendo checado
-		 */
-		private void fixupCase4(Node node) {
-			Node next = node;
-		
-			if (node.isRightChild() && node.parent.isLeftChild()) {
-				leftRotation(node.parent);
-				next = node.left;
-			} else if (node.isLeftChild() && node.parent.isRightChild()) {
-				rightRotation(node.parent);
-				next = node.right;
-			}
-		
-			fixupCase5(next);
-		}
+    /**
+     * Terceiro caso do balanceamento, ele checa se o tio do node em questão é vermelho,
+     * em caso positivo ambos o pai e o tio do node se tornam pretos e o seu avô se torna vermelho
+     * em seguida o primeiro caso é invocado para o avô do node, caso o contrário convocamos o quarto caso 
+     * 
+     * @param node o node em que o balanceamento esta sendo checado
+     */
+    private void fixupCase3(Node node) {
+        if (node.getUncle() != null && node.getUncle().isRed()) {
+            node.parent.turnBlack();
+            node.getUncle().turnBlack();
+            node.getGrandParent().turnRed();
+            fixupCase1(node.getGrandParent());
+            return;
+        } else {
+            fixupCase4(node);
+        }
+    }
 
-		/**
-		 * Quinto caso do balanceamento e o caso final, ele torna o pai do node em preto e seu 
-		 * avô em vermelho depois ele checa se o node é filho a esquerda se sim ele rotaciona o node 
-		 * para a direita e caso negativo ele rotaciona o node para a esquerda 
-		 * 
-		 * @param node o node em que o balanceamento esta sendo checado
-		 */
-		private void fixupCase5(Node node) {
-			node.parent.turnBlack();
-			node.getGrandParent().turnRed();
-		
-			if (node.isLeftChild())
-				rightRotation(node.getGrandParent());
-			else
-				leftRotation(node.getGrandParent());
-		}
-	
+    /**
+     * Quarto caso do balanceamento, ele checa se o node é um filho a direita e seu pai é um filho a esquerda
+     * em caso positivo ele rotaciona o pai para a esquerda e invoca o quinto caso com a esquerda do node,
+     * se o node for um filho a esquerda e o seu pai for um filho a direita o pai é rotacionado para a direira e 
+     * o quinto caso é invocado com a direita do node, caso o node não se enquadre em nenhum desses casos o quinto passo
+     * é invocado passando o mesmo como parametro 
+     * 
+     * @param node o node em que o balanceamento esta sendo checado
+     */
+    private void fixupCase4(Node node) {
+        Node next = node;
+    
+        if (node.isRightChild() && node.parent.isLeftChild()) {
+            leftRotation(node.parent);
+            next = node.left;
+        } else if (node.isLeftChild() && node.parent.isRightChild()) {
+            rightRotation(node.parent);
+            next = node.right;
+        }
+    
+        fixupCase5(next);
+    }
+
+    /**
+     * Quinto caso do balanceamento e o caso final, ele torna o pai do node em preto e seu 
+     * avô em vermelho depois ele checa se o node é filho a esquerda se sim ele rotaciona o node 
+     * para a direita e caso negativo ele rotaciona o node para a esquerda 
+     * 
+     * @param node o node em que o balanceamento esta sendo checado
+     */
+    private void fixupCase5(Node node) {
+        node.parent.turnBlack();
+        node.getGrandParent().turnRed();
+    
+        if (node.isLeftChild())
+            rightRotation(node.getGrandParent());
+        else
+            leftRotation(node.getGrandParent());
+    }
+
 	/**
 	 * Método que rotaciona determinado node para a esquerda
 	 * 
