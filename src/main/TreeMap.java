@@ -245,7 +245,7 @@ public class TreeMap {
 		
 		node.left = node.parent.right;
 		
-		if (node.parent.left != null)
+		if (node.parent.right != null)
 			node.parent.right.parent = node;
 		
 		node.parent.right = node;
@@ -265,63 +265,149 @@ public class TreeMap {
 		remove(toRemove);
     }
 	
-	private void remove(Node toRemove) {
+	private Node BSTreplace(Node node) {
+		if (node.left != null && node.right != null)
+			return sucessor(node.right); 
 		
-		if (toRemove.isLeaf()) {
-			
-			if (toRemove.equals(root) && root.isLeaf())
-				this.root = null;
-			
-			else {
-				if (toRemove.isLeftChild())
-					toRemove.parent.left = null;
-				else
-					toRemove.parent.right = null;
-			}
-			
-			this.size--;
+		if (node.isLeaf())
+			return null;
 		
-		} else if (toRemove.hasOnlyLeftChild()) {
-			
-			if (toRemove.equals(root) && root.hasOnlyLeftChild()) {
-				this.root = toRemove.left;
-				this.root.parent = null;
-			} else {
-				toRemove.left.parent = toRemove.parent;
-				
-				if (toRemove.isLeftChild())
-					toRemove.parent.left = toRemove.left;
-				else
-					toRemove.parent.right = toRemove.left;
-			}
-			
-			this.size--;
-		
-		} else if (toRemove.hasOnlyRigthChild()) {
-			if (toRemove.equals(root) && root.hasOnlyRigthChild()) {
-				this.root = toRemove.right;
-				this.root.parent = null;		
-			} else {
-				toRemove.right.parent = toRemove.parent;
-				
-				if (toRemove.isLeftChild())
-					toRemove.parent.left = toRemove.right;
-				else
-					toRemove.parent.right = toRemove.right;
-			}
-			
-			this.size--;
-		
-		} else {
-			Node antecessor = predecessor(toRemove);
-			
-			toRemove.setKey(antecessor.getKey());
-			toRemove.setValue(antecessor.getValue());
-			
-			remove(antecessor);
-		}
+		if (node.hasOnlyLeftChild())
+			return node.left;
+		else
+			return node.right;
 	}
-    /**
+	
+	private void remove(Node toRemove) {
+		Node replace = BSTreplace(toRemove);
+		
+		boolean bothBlack = (toRemove.isBlack()) && (replace == null || replace.isBlack());
+		
+		Node parent = toRemove.parent;
+		
+		if (replace == null) {
+			if (toRemove.equals(root))
+				this.root = null;
+			else {
+				if (bothBlack)
+					fixDoubleBlack(toRemove);
+				else if (toRemove.getSibling() != null)
+					toRemove.getSibling().turnRed();
+				if (toRemove.isLeftChild())
+					parent.left = null;
+				else
+					parent.right = null;
+			}
+			return;
+		}
+		
+		if (toRemove.left == null || toRemove.right == null) {
+			if (toRemove.equals(root)) {
+				toRemove.setKey(replace.getKey());
+				toRemove.setValue(replace.getValue());
+				
+				toRemove.left = null;
+				toRemove.right = null;
+			} else {
+				if (toRemove.isLeftChild())
+					parent.left = replace;
+				else
+					parent.right = replace;
+				
+				replace.parent = parent;
+				
+				if (bothBlack)
+					fixDoubleBlack(replace);
+				else
+					replace.turnBlack();
+			}
+			return;
+		}
+		
+		swapValues(replace, toRemove);
+		remove(replace);
+		
+	}
+	
+	private void swapValues(Node u, Node v) {
+		String aux = u.getKey();
+		int auxValue = u.getValue();
+		
+		u.setKey(v.getKey());
+		u.setValue(v.getValue());
+		
+		v.setKey(aux);
+		v.setValue(auxValue);
+	}
+
+	private void fixDoubleBlack(Node node) {
+		if (node.equals(root))
+			return;
+		
+		Node sibling = node.getSibling();
+		
+		if (sibling == null)
+			fixDoubleBlack(node.parent);
+		else
+			removeFixUp(node, sibling);
+	}
+	
+	private void removeFixUp(Node node, Node sibling) {
+		if (sibling.isRed()) {
+			
+			sibling.turnBlack();
+			node.parent.turnRed();
+			
+			if (sibling.isLeftChild())
+				rightRotation(node.parent);
+			else
+				leftRotation(node.parent);
+			
+			fixDoubleBlack(node);
+		} else {
+			if (sibling.hasRedChild()) {
+				
+				if (sibling.left != null && sibling.left.isRed()) {
+					
+					if (sibling.isLeftChild()) {
+						
+						sibling.left.color = sibling.getColor();
+						sibling.color = node.parent.getColor();
+						
+						rightRotation(node.parent);
+					} else {
+						sibling.left.color = node.parent.getColor();
+						
+						rightRotation(sibling);
+						leftRotation(node.parent);
+					}
+				} else {
+					if (sibling.isLeftChild()) {
+						
+						sibling.right.color = node.parent.getColor();
+						
+						leftRotation(sibling);
+						rightRotation(node.parent);
+					} else {
+						sibling.right.color = sibling.getColor();
+						sibling.color = node.parent.getColor();
+						leftRotation(node.parent);
+					}
+				}
+				node.parent.turnBlack();
+			} else {
+				sibling.turnRed();
+				
+				if (node.parent.isBlack())
+					fixDoubleBlack(node.parent);
+				else
+					node.parent.turnBlack();
+			}
+		}
+		
+	}
+	
+	/**
      * Metodo que retorna o valor atrelado a determinada chave
      * 
      * @param key chave referente ao node desejado
@@ -405,40 +491,18 @@ public class TreeMap {
 			return 1 + Math.max(height(node.left), height(node.right));
     }
     
-    /**
-     * Método que retorna o maximo de determida arvore, considerando o node passado como a raiz da subarvore 
-     * 
-     * @param node raiz da subarvore que se deseja encontrar o maximo
-     * @return retorna o node referente ao maximo da subarvore
-     */
-    private Node max(Node node) {
-		if (node.right == null)
-			return node;
-		
-		return max(node.right);
-	}
-    
+  
     /**
      * Método que retorna o antecessor de determinado node
      * 
      * @param node node o qual se deseja encontrar o predecessor
      * @return retorna o antecessor do node em questão
      */
-    public Node predecessor(Node node) {
-		if (node == null)
-			return null;
-		
-		if (node.left!= null)
-			return max(node.left);
-		
-		else {
-			Node aux = node.parent;
-			
-			while (aux != null && aux.getKey().compareTo(node.getKey()) > 0)
-				aux = aux.parent;
-			
-			return aux;
-		}
+    private Node sucessor(Node node) {
+		Node aux = node;
+		while (aux.left != null)
+			aux = aux.left;
+		return aux;
 	}
     
     
@@ -480,7 +544,11 @@ class Node {
         this.color = Color.RED;
     }
     
-    @Override
+    public boolean hasRedChild() {
+		return this.right.isRed() || this.left.isRed();
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(pair);
 	}
@@ -513,6 +581,7 @@ class Node {
 	boolean isLeftChild() {
     	return this.equals(this.parent.left);
     }
+	
     
    boolean isRightChild() {
     	return !isLeftChild();
@@ -524,6 +593,14 @@ class Node {
     	else
     		return this.getGrandParent().right;
     }
+   	
+   	Node getSibling() {
+   		if (this.isLeftChild()) {
+   			return parent.right;
+   		} else {
+   			return parent.left;
+   		}
+   	}
     
     Node getGrandParent() {
     	return this.parent.parent;
@@ -561,11 +638,11 @@ class Node {
     	this.color = Color.RED;
     }
     
-    String getColor() {
+    Color getColor() {
     	if (this.color == Color.BLACK) {
-    		return "BLACK";
+    		return Color.BLACK;
     	} else {
-    		return "RED";
+    		return Color.RED;
     	}
     }
     
