@@ -1,18 +1,69 @@
 plugins {
-	id 'java'
+    id 'application'
+    id 'java'
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	testImplementation('org.junit.jupiter:junit-jupiter:5.6.0')
+    // Dependências de teste (opcional)
+    testImplementation 'junit:junit:4.13.2'
 }
 
-test {
-	useJUnitPlatform()
-	testLogging {
-		events "passed", "skipped", "failed"
-	}
+// Configuração da aplicação principal
+application {
+    mainClass = 'Main'
 }
+
+
+// Configurações de compilação
+compileJava {
+    options.encoding = 'UTF-8'
+}
+
+// Configurações de execução padrão
+run {
+    // Configurações de JVM para melhor performance
+    jvmArgs = [
+        '-Xmx4g',
+        '-Xms1g',
+        '-XX:+UseG1GC'
+    ]
+    
+    // Permitir argumentos da linha de comando
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
+
+// Task customizada para executar workload (alternativa)
+task runWorkload(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'Main'
+    description = 'Executa o gerador de workload para TreeMap'
+    group = 'application'
+    
+    // Configurações de JVM para melhor performance
+    jvmArgs = [
+        '-Xmx4g',
+        '-Xms1g',
+        '-XX:+UseG1GC'
+    ]
+    
+    // Permitir argumentos
+    if (project.hasProperty('args')) {
+        args project.args.split('\\s+')
+    }
+}
+
+// Task para limpar os resultados anteriores
+task cleanResults(type: Delete) {
+    delete 'workload_results'
+    description = 'Remove os resultados de workloads anteriores'
+    group = 'build'
+}
+
+// Fazer as tasks de execução dependerem da limpeza (opcional)
+// runWorkload.dependsOn cleanResults
