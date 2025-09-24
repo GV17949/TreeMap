@@ -32,6 +32,7 @@ public class TreeMapAVL {
         } else if (newNode.getKey() < current.getKey()) {
             if (current.left == null) {
                 current.left = newNode;
+                newNode.parent = current;
                 this.size++;
                 return null;
             }
@@ -39,16 +40,104 @@ public class TreeMapAVL {
         } else {
             if (current.right == null) {
                 current.right = newNode;
+                newNode.parent = current;
                 this.size++;
                 return null;
             }
             return this.put(current.right, newNode);
         }
+        
+        int balance = this.balance(current);
+        if (Math.abs(balance) > 1) {
+            if (balance > 0) {
+                if (newNode.getKey() > current.left.getKey()) {
+                    this.leftRotation(current.left);
+                    this.rightRotation(current);
+                } else {
+                    this.rightRotation(current);
+                }
+            } else {
+                if (newNode.getKey() < current.right.getKey()) {
+                    this.rightRotation(current.right);
+                    this.leftRotation(current);
+                } else {
+                    this.leftRotation(current);
+                }
+            }
+        }
     }
 
-    //TODO:
     public String remove(int key) {
-        return null;
+        if (this.isEmpty())
+            return null;
+
+        return this.remove(this.root, int key);
+    }
+
+    private String remove(NodeAVL current, int key) {
+        if (current.getKey() != key) {
+            if (key < current.getKey()) {
+                if (current.left == null)
+                    return null;
+                return this.remove(current.left, key);
+            } else {
+                if (current.right == null)
+                    return null;
+                return this.remove(current.right, key);
+            }
+        }
+
+        String value = this.remove(current);
+
+        int balance = this.balance(current);
+        if (Math.abs(balance) > 1) {
+            if (balance > 0) {
+                if (this.balance(current.left) < 0)
+                    this.leftRotation(current.left);
+                this.rightRotation(current);
+            } else {
+                if (this.balance(current.right) > 0)
+                    this.rightRotation(current.right);
+                this.leftRotation(current);
+            }
+        }
+
+        return value;
+    }
+
+
+    private String remove(NodeAVL toRemove) {
+        String aux = toRemove.getValue();
+
+        if (toRemove.isLeaf()) {
+            if (toRemove.equals(this.root)) {
+                this.root = null;
+            } else {
+                if (toRemove.getKey < toRemove.parent.getKey)
+                    toRemove.parent.left = null;
+                else
+                    toRemove.parent.right = null;
+            }
+        } else if (!toRemove.hasTwoChilds) {
+            if (toRemove.left != null) {
+                if (toRemove.getKey < toRemove.parent.getKey)
+                    toRemove.parent.left = toRemove.left;
+                else
+                    toRemove.parent.right = toRemove.left;
+            } else {
+                if (toRemove.getKey < toRemove.parent.getKey)
+                    toRemove.parent.left = toRemove.right;
+                else
+                    toRemove.parent.right = toRemove.right;
+            }
+        } else {
+            NodeAVL sucessor = this.sucessor(toRemove)
+            this.swap(toRemove, sucessor);
+            return this.remove(sucessor);
+        }
+
+        this.size--;
+        return aux;
     }
 
     public String get(int key) {
@@ -142,6 +231,22 @@ public class TreeMapAVL {
         node.parent.right = node;
         node.left.parent = node;
     }
+
+    private NodeAVL sucessor(NodeAVL node) {
+        return this.min(node.right);
+    }
+
+    private NodeAVL min(NodeAVL node) {
+        if (node.left == null)
+            return node;
+        return this.max(node.left);
+    }
+
+    private void swap(NodeAVL node1, NodeAVL node2) {
+        PairAVL aux = node1.pair;
+        node1.pair = node2.pair;
+        node2.pair = aux;
+    }
 }
 
 class NodeAVL {
@@ -168,6 +273,10 @@ class NodeAVL {
 
     boolean isLeaf() {
         return this.left == null && this.right == null;
+    }
+
+    boolean hasTwoChilds() {
+        return this.left != null && this.right != null;
     }
 
     @Override
