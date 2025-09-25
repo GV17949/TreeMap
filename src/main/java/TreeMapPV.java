@@ -263,8 +263,9 @@ public class TreeMapPV {
 	public String remove(Integer key) {
 		Node toRemove = search(key);
 		
-		if (toRemove == null)
+		if (toRemove == null) {
 			return null;
+    }
 					
     String value = toRemove.getValue();
 		remove(toRemove);
@@ -470,7 +471,7 @@ public class TreeMapPV {
 	public String get(Integer key) {
     	Node node = search(key);
     	
-    	return node.getValue(); 
+    	return node != null ? node.getValue() : null;
     }
 
     /**
@@ -493,7 +494,7 @@ public class TreeMapPV {
 		Node aux = this.root;
 		
 		while (aux != null) {
-			if (aux.getKey() == key)
+			if (aux.getKey().equals(key))
 				return aux;
 			
 			else if (aux.getKey().compareTo(key) < 0)
@@ -520,7 +521,7 @@ public class TreeMapPV {
 	private boolean containsValue(Node node, String value) {
     	if (node != null) {
     		
-    		if (node.getValue() == value)
+    		if (node.getValue().equals(value))
     			return true;
     		
     		return containsValue(node.left, value) || containsValue(node.right, value);
