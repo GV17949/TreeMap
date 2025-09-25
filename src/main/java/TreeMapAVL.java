@@ -12,6 +12,11 @@ public class TreeMapAVL {
         return this.root == null;
     }
 
+    public void clear() {
+      this.root = null;
+      this.size = 0;
+    }
+
     public String put(int key, String value) {
         NodeAVL newNode = new NodeAVL(key, value);
 
@@ -25,10 +30,11 @@ public class TreeMapAVL {
     }
 
     private String put(NodeAVL current, NodeAVL newNode) {
+        String value = "";
         if (current.equals(newNode)) {
             String aux = current.getValue();
             current.setValue(newNode.getValue());
-            return aux;
+            value = aux;
         } else if (newNode.getKey() < current.getKey()) {
             if (current.left == null) {
                 current.left = newNode;
@@ -44,7 +50,7 @@ public class TreeMapAVL {
                 this.size++;
                 return null;
             }
-            return this.put(current.right, newNode);
+            value = this.put(current.right, newNode);
         }
         
         int balance = this.balance(current);
@@ -65,13 +71,14 @@ public class TreeMapAVL {
                 }
             }
         }
+        return value;
     }
 
     public String remove(int key) {
         if (this.isEmpty())
             return null;
 
-        return this.remove(this.root, int key);
+        return this.remove(this.root, key);
     }
 
     private String remove(NodeAVL current, int key) {
@@ -113,27 +120,29 @@ public class TreeMapAVL {
             if (toRemove.equals(this.root)) {
                 this.root = null;
             } else {
-                if (toRemove.getKey < toRemove.parent.getKey)
+                if (toRemove.getKey() < toRemove.parent.getKey()) {
                     toRemove.parent.left = null;
-                else
+                } else {
                     toRemove.parent.right = null;
+                }
             }
-        } else if (!toRemove.hasTwoChilds) {
-            if (toRemove.left != null) {
-                if (toRemove.getKey < toRemove.parent.getKey)
-                    toRemove.parent.left = toRemove.left;
-                else
-                    toRemove.parent.right = toRemove.left;
+        } else if (!toRemove.hasTwoChilds()) {
+            NodeAVL child = toRemove.left != null ? toRemove.left : toRemove.right;
+            if (toRemove.equals(this.root)) {
+                this.root = child;
+                if (child != null) child.parent = null;
             } else {
-                if (toRemove.getKey < toRemove.parent.getKey)
-                    toRemove.parent.left = toRemove.right;
-                else
-                    toRemove.parent.right = toRemove.right;
+                if (toRemove.getKey() < toRemove.parent.getKey()) {
+                    toRemove.parent.left = child;
+                } else {
+                    toRemove.parent.right = child;
+                }
+                if (child != null) child.parent = toRemove.parent;
             }
         } else {
-            NodeAVL sucessor = this.sucessor(toRemove)
-            this.swap(toRemove, sucessor);
-            return this.remove(sucessor);
+            NodeAVL successor = this.sucessor(toRemove);
+            this.swap(toRemove, successor);
+            return this.remove(successor);
         }
 
         this.size--;
@@ -239,7 +248,7 @@ public class TreeMapAVL {
     private NodeAVL min(NodeAVL node) {
         if (node.left == null)
             return node;
-        return this.max(node.left);
+        return this.min(node.left);
     }
 
     private void swap(NodeAVL node1, NodeAVL node2) {

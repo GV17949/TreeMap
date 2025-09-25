@@ -175,8 +175,8 @@ public class Main {
         // Tentar adicionar suas implementações personalizadas
         try {
             // Descomente e adapte quando suas classes estiverem prontas
-            // implementations.add(new PVTreeMapWrapper<>());
-            // implementations.add(new AVLTreeMapWrapper<>());
+            implementations.add(new PVTreeMapWrapper());
+            implementations.add(new AVLTreeMapWrapper());
             
             System.out.println("NOTA: Para comparar com suas implementações, ");
             System.out.println("      descomente e adapte as linhas em createImplementations()");

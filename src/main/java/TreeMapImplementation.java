@@ -47,78 +47,60 @@ class StandardTreeMap<K, V> implements TreeMapImplementation<K, V> {
 /**
  * Wrapper para implementações personalizadas
  */
-class PVTreeMapWrapper<K extends Comparable<K>, V> implements TreeMapImplementation<K, V> {
-    // private final TreeMap<K, V> map = new TreeMap<>();
+class PVTreeMapWrapper implements TreeMapImplementation<Integer, String> {
+    private final TreeMapPV map = new TreeMapPV();
     
     @Override
-    public void put(K key, V value) {
-        // TODO
-        // map.put(key, value);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMap");
+    public void put(Integer key, String value) {
+        map.put(key, value);
     }
     
     @Override
-    public V get(K key) {
-        // TODO
-        // return map.get(key);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMap");
+    public String get(Integer key) {
+        return map.get(key);
     }
     
     @Override
-    public V remove(K key) {
-        // TODO
-        // return map.remove(key);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMap");
+    public String remove(Integer key) {
+        return map.remove(key);
     }
     
     @Override
     public String getName() {
-        // TODO
         return "PV Tree (Red-Black)";
     }
     
     @Override
     public void clear() {
-        // TODO
-        // map.clear();
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMap");
+        map.clear();
     }
 }
 
-class AVLTreeMapWrapper<K extends Comparable<K>, V> implements TreeMapImplementation<K, V> {
-    // private final TreeMapAVL<K, V> map = new TreeMapAVL<>();
+class AVLTreeMapWrapper implements TreeMapImplementation<Integer, String> {
+    private final TreeMapAVL map = new TreeMapAVL();
     
     @Override
-    public void put(K key, V value) {
-        // TODO
-        // map.put(key, value);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMapAVL");
+    public void put(Integer key, String value) {
+        map.put(key, value);
     }
     
     @Override
-    public V get(K key) {
-        // TODO
-        // return map.get(key);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMapAVL");
+    public String get(Integer key) {
+        return map.get(key);
     }
     
     @Override
-    public V remove(K key) {
-        // TODO
-        // return map.remove(key);
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMapAVL");
+    public String remove(Integer key) {
+        return map.remove(key);
     }
     
     @Override
     public String getName() {
-        // TODO
         return "AVL Tree";
     }
     
     @Override
     public void clear() {
-        // TODO
-        // map.clear();
-        throw new UnsupportedOperationException("Implemente usando nossa classe TreeMapAVL");
+        map.clear();
     }
 }

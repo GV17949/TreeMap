@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class TreeMap {
+public class TreeMapPV {
     private Node root;
     private int size;
 
@@ -23,6 +23,10 @@ public class TreeMap {
     	return this.root == null;
     }
 
+    public void clear() {
+      this.root = null;
+      this.size = 0;
+    }
     
     /**
      * Metodo responsável por adicionar elementos no TreeMap a partir de uma chave e um valor 
@@ -30,7 +34,7 @@ public class TreeMap {
      * @param key é a String que sera utilizada para reconhecer unicamente o node;
      * @param value é o valor inteiro ligado a determinada chave
      */
-    public void put(String key, int value) {
+    public void put(Integer key, String value) {
       
       if (isEmpty()) {
         Node newNode = new Node(key, value);
@@ -43,7 +47,7 @@ public class TreeMap {
       }
     }
 	
-	private void put(Node current, String key, int value) {
+	private void put(Node current, Integer key, String value) {
 		
 		if (current.getKey().compareTo(key) == 0) {
 			replace(current, value);
@@ -88,13 +92,13 @@ public class TreeMap {
 	 * @param key a chave do node que se deseja alterar o valor
 	 * @param newValue o novo valor que sera atribuido ao node
 	 */
-	public void replace(String key, int newValue) {
+	public void replace(Integer key, String newValue) {
 		Node node = search(key);
 		
 		replace(node, newValue);
 	}
 	
-	private void replace(Node node, int newValue) {
+	private void replace(Node node, String newValue) {
 		node.setValue(newValue);
 	}
 	
@@ -256,13 +260,15 @@ public class TreeMap {
 	 * 
 	 * @param key chave que deseja ser removida
 	 */
-	public void remove(String key) {
+	public String remove(Integer key) {
 		Node toRemove = search(key);
 		
 		if (toRemove == null)
-			return;
+			return null;
 					
+    String value = toRemove.getValue();
 		remove(toRemove);
+    return value;
     }
 	
 	/**
@@ -364,8 +370,8 @@ public class TreeMap {
 	 * @param v segundo node que os valores desejam ser trocados
 	 */
 	private void swapValues(Node u, Node v) {
-		String aux = u.getKey();
-		int auxValue = u.getValue();
+		Integer aux = u.getKey();
+		String auxValue = u.getValue();
 		
 		u.setKey(v.getKey());
 		u.setValue(v.getValue());
@@ -461,7 +467,7 @@ public class TreeMap {
      * @param key chave referente ao node desejado
      * @return retorna o valor atrelado a chave passada como parametro
      */
-	public int get(String key) {
+	public String get(Integer key) {
     	Node node = search(key);
     	
     	return node.getValue(); 
@@ -473,7 +479,7 @@ public class TreeMap {
      * @param key chavce que deseja ser checada
      * @return true caso a chave esteja presente, false em caso contrário
      */
-	public boolean containsKey(String key) {
+	public boolean containsKey(Integer key) {
     	return search(key) != null;
     }
     
@@ -483,7 +489,7 @@ public class TreeMap {
      * @param key chave referente ao node que deseja ser procurado
      * @return retorna o node atrelado a chave passada como parametro 
      */
-	private Node search(String key) {
+	private Node search(Integer key) {
 		Node aux = this.root;
 		
 		while (aux != null) {
@@ -507,11 +513,11 @@ public class TreeMap {
      * @param value valor que se deseja checar a presença na estrutura
      * @return retorna true caso o valor esteja presente em pelo menos um node e falso em caso contrário
      */
-	public boolean containsValue(int value) {
+	public boolean containsValue(String value) {
     	return containsValue(this.root, value);
     }
     
-	private boolean containsValue(Node node, int value) {
+	private boolean containsValue(Node node, String value) {
     	if (node != null) {
     		
     		if (node.getValue() == value)
@@ -576,13 +582,13 @@ class Node {
   protected Color color;
     
 
-  public Node(String key, int value) {
+  public Node(Integer key, String value) {
       this.pair = new Pair(key, value);
       this.color = Color.RED;
   }
     
   public boolean hasRedChild() {
-		return this.right.isRed() || this.left.isRed();
+		return (this.right != null && this.right.isRed()) || (this.left != null && this.left.isRed());
 	}
 
 	@Override
@@ -625,6 +631,7 @@ class Node {
   }
     
   Node getUncle() {
+    if (parent == null || parent.parent == null) return null;
     if (this.parent.isRightChild())
       return this.getGrandParent().left;
     else
@@ -632,6 +639,7 @@ class Node {
   }
    	
   Node getSibling() {
+    if (parent == null || parent.parent == null) return null;
     if (this.isLeftChild()) {
       return parent.right;
     } else {
@@ -640,22 +648,23 @@ class Node {
   }
   
   Node getGrandParent() {
+    if (parent == null || parent.parent == null) return null;
     return this.parent.parent;
   }
 
-  int getValue() {
+  String getValue() {
     return this.pair.getValue();
   }
   
-  void setValue(int newValue) {
+  void setValue(String newValue) {
     this.pair = new Pair(this.pair.getKey(), newValue);
   }
   
-  void setKey(String newKey) {
+  void setKey(Integer newKey) {
     this.pair = new Pair(newKey, this.pair.getValue());
   }
   
-  String getKey() {
+  Integer getKey() {
     return this.pair.getKey();
   }
 
@@ -691,10 +700,10 @@ class Node {
 }
 
 class Pair {
-    private String key;
-    private int value;
+    private Integer key;
+    private String value;
       
-    public Pair(String key, int value) {
+    public Pair(Integer key, String value) {
       this.key = key;
       this.value = value;
     }
@@ -716,11 +725,11 @@ class Pair {
       return Objects.equals(key, other.key);
     }
 
-    public String getKey() {
+    public Integer getKey() {
       return this.key;
     }
     
-    public int getValue() {
+    public String getValue() {
       return this.value;
     }
     
