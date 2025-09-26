@@ -1,0 +1,20 @@
+=== RELATÓRIO COMPARATIVO ===
+Workload: QUERY_HEAVY (10000 ops)
+Data/Hora: Fri Sep 26 19:30:42 BRT 2025
+
+MELHORES RESULTADOS:
+Menor tempo total: Red-Black Tree (Java TreeMap) (agregado) (1.03 ms)
+Menor tempo médio: Red-Black Tree (Java TreeMap) (agregado) (70.75 ns)
+Mais consistente: Red-Black Tree (Java TreeMap) (agregado) (σ = 87.68 ns)
+
+TABELA COMPARATIVA:
+Implementação                      Tempo Total     Tempo Médio         Mediana   Desvio Padrão
+-----------------------------------------------------------------------------------------------
+Red-Black Tree (Java TreeMap) (agregado)         1.03 ms        70.75 ns        70.00 ns        87.68 ns
+PV Tree (Red-Black) (agregado)         1.10 ms        78.20 ns        60.00 ns       165.49 ns
+AVL Tree (agregado)                    1.12 ms        80.34 ns        70.00 ns       108.38 ns
+
+ANÁLISE DE SPEEDUP (relativo à implementação mais lenta):
+Red-Black Tree (Java TreeMap) (agregado): 1.09x mais rápido
+PV Tree (Red-Black) (agregado): 1.02x mais rápido
+AVL Tree (agregado)           : 1.00x mais rápido
