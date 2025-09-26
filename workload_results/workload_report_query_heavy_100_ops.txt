@@ -1,0 +1,32 @@
+=== RELATÓRIO DE WORKLOAD ===
+Tipo: QUERY_HEAVY
+Número de operações: 100
+Data/Hora: Fri Sep 26 19:30:27 BRT 2025
+Distribuição das operações:
+  - INSERT: 10.0%
+  - DELETE: 10.0%
+  - QUERY:  80.0%
+
+============================================================
+
+--- Red-Black Tree (Java TreeMap) (agregado) ---
+Tempo total do workload: 0.02 ms
+Tempo médio por operação: 131.45 ns
+Mediana das operações: 40.00 ns
+Desvio padrão: 355.21 ns
+Throughput: 4389.04 ops/ms
+
+--- PV Tree (Red-Black) (agregado) ---
+Tempo total do workload: 0.04 ms
+Tempo médio por operação: 281.56 ns
+Mediana das operações: 40.00 ns
+Desvio padrão: 843.02 ns
+Throughput: 2626.88 ops/ms
+
+--- AVL Tree (agregado) ---
+Tempo total do workload: 0.04 ms
+Tempo médio por operação: 287.06 ns
+Mediana das operações: 50.00 ns
+Desvio padrão: 1766.76 ns
+Throughput: 2402.29 ops/ms
+
